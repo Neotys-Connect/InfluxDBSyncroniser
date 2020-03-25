@@ -6,20 +6,23 @@ import com.neotys.ascode.swagger.client.model.CounterDefinition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class NeoLoadMonitoringData extends  NeoLoadCommonData {
 
     @Column(name ="name",tag = true)
-    private String name = null;
+    private String name ;
 
-    @Column(name ="path")
-    private List<String> path = null;
+    @Column(name ="path" ,tag = true)
+    private String path ;
 
     public void init_monitoringdata(CounterDefinition definition)
     {
         this.name=definition.getName();
-        this.path=new ArrayList<>();
-        this.path.addAll(definition.getPath());
+        if(definition.getPath()!=null)
+            this.path=definition.getPath().stream().collect(Collectors.joining("/"));
+        else
+            this.path="";
     }
 
     public String getName() {
@@ -30,11 +33,11 @@ public class NeoLoadMonitoringData extends  NeoLoadCommonData {
         this.name = name;
     }
 
-    public List<String> getPath() {
+    public String getPath() {
         return path;
     }
 
-    public void setPath(List<String> path) {
+    public void setPath(String path) {
         this.path = path;
     }
 }

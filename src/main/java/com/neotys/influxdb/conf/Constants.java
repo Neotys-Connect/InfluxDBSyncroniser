@@ -43,12 +43,10 @@ public class Constants {
     public static final String NEOLOAD_ENDSTATUS="PASSED";
 
     //-----SLA Status
-    public static final String NEOLOAD_PASS_STATUS="PASSED";
-    public static final String NEOLOAD_FAIL_STATUS="FAILED";
-    public static final List<String> ELEMENT_LIST_CATEGORY = new ArrayList<>(  Arrays.asList("TRANSACTION"));
+
+    public static final List<String> ELEMENT_LIST_CATEGORY = Arrays.asList("TRANSACTION");
 
    // public static final List<String> ELEMENT_LIST_CATEGORY = new ArrayList<>(  Arrays.asList("TRANSACTION", "PAGE","REQUEST"));
-    public static final String ELEMENT_STATISTICS="AVG_DURATION,MIN_DURATION, MAX_DURATION, COUNT, THROUGHPUT, ELEMENTS_PER_SECOND, ERRORS, ERRORS_PER_SECOND, ERROR_RATE , AVG_TTFB, MIN_TTFB, MAX_TTFB " ;
-    public static final String ISSUE_TYPE="Test Execution";
+    public static final String ELEMENT_STATISTICS="AVG_DURATION,MIN_DURATION,MAX_DURATION,COUNT,THROUGHPUT,ELEMENTS_PER_SECOND,ERRORS,ERRORS_PER_SECOND,ERROR_RATE,AVG_TTFB,MIN_TTFB,MAX_TTFB" ;
 
 }

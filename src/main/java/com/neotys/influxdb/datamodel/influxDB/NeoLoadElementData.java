@@ -8,22 +8,27 @@ import com.neotys.ascode.swagger.client.model.ElementDefinition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class NeoLoadElementData extends NeoLoadCommonData {
     @Column(name ="name",tag = true)
-    private String name = null;
+    private String name = "";
 
-    @Column(name ="path")
-    private List<String> path = null;
+    @Column(name ="path" ,tag = true)
+    private String path ="";
 
     @Column(name ="type",tag = true)
-    private String type = null;
+    private String type = "";
 
     public void initElement(ElementDefinition elementDefinition)
     {
         this.name=elementDefinition.getName();
-        this.path=new ArrayList<>();
-        this.path.addAll(elementDefinition.getPath());
+
+        if(elementDefinition.getPath()!=null)
+            this.path=elementDefinition.getPath().stream().collect(Collectors.joining("/"));
+        else
+            this.path="";
+
         this.type=elementDefinition.getType();
     }
 
@@ -35,11 +40,11 @@ public class NeoLoadElementData extends NeoLoadCommonData {
         this.name = name;
     }
 
-    public List<String> getPath() {
+    public String getPath() {
         return path;
     }
 
-    public void setPath(List<String> path) {
+    public void setPath(String path) {
         this.path = path;
     }
 

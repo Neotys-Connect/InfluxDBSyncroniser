@@ -32,6 +32,14 @@ public class NeoLoadCommonData {
         this.startDate=definition.getStartDate();
     }
 
+    public Double setValue(Float value)
+    {
+        if(value!=null)
+            return Double.valueOf(value);
+        else
+            return Double.valueOf(0);
+    }
+
     public Instant getEventTime() {
         return time;
     }

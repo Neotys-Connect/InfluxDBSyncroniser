@@ -12,6 +12,7 @@ import io.vertx.core.Future;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
 import org.influxdb.impl.InfluxDBMapper;
+import org.omg.PortableServer.THREAD_POLICY_ID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +50,7 @@ public class NeoLoadHttpHandler {
     private  InfluxDBMapper influxDBMapper;
 
     public NeoLoadHttpHandler(String testid) throws NeoLoadException {
-        testid=testid;
+        this.testid=testid;
         logger=new NeoLoadLogger(this.getClass().getName());
         logger.setTestid(testid);
         getEnvVariables();
@@ -77,11 +78,13 @@ public class NeoLoadHttpHandler {
         {
             logger.debug("Database "+influxDatabase.get()+" does not exists");
             this.influxDB.createDatabase(influxDatabase.get());
+            this.influxDB.setDatabase(influxDatabase.get());
             logger.debug("Database "+influxDatabase.get()+" created");
 
         }
 
         this.influxDBMapper = new InfluxDBMapper(influxDB);
+
     }
     private String generateInfluxDBUrl()
     {
@@ -107,35 +110,52 @@ public class NeoLoadHttpHandler {
 
         List<String> errorStrings=new ArrayList<>();
         try {
+            logger.debug("Start to extrat data from "+ testid);
+
             TestDefinition testDefinition = resultsApi.getTest(testid);
-            while (test_status==null && !test_status.equalsIgnoreCase(NEOLOAD_ENDSTATUS))
+            test_status=testDefinition.getStatus().getValue();
+            logger.debug("Test test has the current status "+ test_status);
+
+            while (!test_status.equalsIgnoreCase(NEOLOAD_ENDSTATUS))
             {
+                logger.debug("Test test has the current status "+ test_status);
                 testDefinition = resultsApi.getTest(testid);
                 test_status=testDefinition.getStatus().getValue();
                 TestDefinition finalTestDefinition2 = testDefinition;
-
+                logger.debug("parsing the test "+testDefinition.getName());
                 ELEMENT_LIST_CATEGORY.stream().parallel().forEach(category ->
                 {
                     try {
+                        logger.debug("Start element parsing for category "+category);
                         resultsApi.getTestElements(testid, category).forEach(elementDefinition ->
                         {
+                                logger.debug("looking at the element "+elementDefinition.getName());
                             //----for each element-----
                             try {
                                 resultsApi.getTestElementsPoints(testid, elementDefinition.getId(), ELEMENT_STATISTICS).forEach(point ->
                                 {
+                                    logger.debug("Foudn te element points withe offset "+point.getFrom() +" with ref "+offset_elements.get());
                                     //----store the points----
                                     if(point.getFrom()>offset_elements.get())
                                     {
+                                        logger.debug("Storing the element point "+point.getFrom());
                                         NeoLoadElementsPoints elementsPoints=new NeoLoadElementsPoints(finalTestDefinition2,elementDefinition,point);
                                         influxDBMapper.save(elementsPoints);
+                                        logger.debug(" point stored "+point.getFrom());
+                                        try {
+                                            Thread.sleep(50);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
                                     //-----------------------
-                                    offset_elements.set(point.getTo());
+                                    offset_elements.set(point.getFrom());
                                 });
                             } catch (ApiException e) {
                                 logger.error("Error parsing the element for id "+elementDefinition.getId(), e);
                                 errorStrings.add("Error parsing the element for id "+elementDefinition.getId() +" -" +e.getMessage());
                             }
+
                         });
                     } catch (ApiException e) {
                         logger.error("Error parseing results", e);
@@ -146,18 +166,30 @@ public class NeoLoadHttpHandler {
                     //----query the coutners$
                     resultsApi.getTestMonitors(testid).forEach(counterDefinition ->
                     {
+                        logger.debug("parsing the counter "+counterDefinition.getName());
 
                         try {
                             resultsApi.getTestMonitorsPoints(testid, counterDefinition.getId()).forEach(point ->
                             {
+                                logger.debug("parsing the point with offset"+point.getFrom() +" the current offset reference is "+offset_monitor.get());
+
                                 //------store in the database------
                                 if(point.getFrom()>offset_monitor.get())
                                 {
+                                    logger.debug("Storing the point with offset"+point.getFrom());
+
                                     NeoLoadMonitoringPoints monitoringPoints=new NeoLoadMonitoringPoints(finalTestDefinition2,counterDefinition,point);
                                     influxDBMapper.save(monitoringPoints);
+                                    logger.debug(" the point with offset stored"+point.getFrom());
+                                    try {
+                                        Thread.sleep(50);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+
 
                                 }
-                                offset_monitor.set(point.getTo());
+                                offset_monitor.set(point.getFrom());
                                 //-------------------------------
                             });
                         }
@@ -180,6 +212,8 @@ public class NeoLoadHttpHandler {
                 TestDefinition finalTestDefinition = testDefinition;
                 resultsApi.getTestEvents(testid,null,200, offset_events.get(),"+offset_events").forEach(eventDefinition ->
                 {
+                    logger.debug("parsing the event  "+eventDefinition.getFullname());
+
                     String elementname=elements.get(eventDefinition.getElementid().toString());
                     if(elementname==null)
                     {
@@ -194,18 +228,29 @@ public class NeoLoadHttpHandler {
                             errorStrings.add("unable to find the element  : " + eventDefinition.getId() + " - "+e.getMessage());
 
                         }
+                        logger.debug("parsing on the element   "+elementname);
 
                     }
                     //----store the event---------------
+                    logger.debug("Storing the event  "+eventDefinition.getFullname());
+
                     NeoLoadEvents neoLoadEvents=new NeoLoadEvents(finalTestDefinition,eventDefinition,elementname);
                     influxDBMapper.save(neoLoadEvents);
                     offset_events.set(Integer.parseInt(eventDefinition.getId()));
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     //----------------------------------
                 });
             }
 
             if(test_status.equalsIgnoreCase(NEOLOAD_ENDSTATUS))
             {
+                Thread.sleep(500);
+                logger.debug("Test is finished "+testDefinition.getName());
+
                 //---get the values-----
                 TestDefinition finalTestDefinition1 = testDefinition;
                 ELEMENT_LIST_CATEGORY.stream().parallel().forEach(category ->
@@ -213,10 +258,14 @@ public class NeoLoadHttpHandler {
                     try {
                         resultsApi.getTestElements(testid, category).forEach(elementDefinition ->
                         {
+                            logger.debug("parsin element "+elementDefinition.getName());
+
                             //----for each element-----
                             try {
                                 ElementValues values=resultsApi.getTestElementsValues(testid, elementDefinition.getId());
                                 //----store the element value--
+                                logger.debug("Storing value of  element "+elementDefinition.getName());
+
                                 NeoLoadElementsValues neoLoadElementsValues=new NeoLoadElementsValues(finalTestDefinition1,elementDefinition,values);
                                 influxDBMapper.save(neoLoadElementsValues);
 
@@ -229,6 +278,8 @@ public class NeoLoadHttpHandler {
                         });
                         resultsApi.getTestMonitors(testid).forEach(counterDefinition -> {
                             try {
+                                logger.debug("parsing counter  "+counterDefinition.getName());
+
                                 CounterValues customMonitorValues=resultsApi.getTestMonitorsValues(testid, counterDefinition.getId());
                                 NeoLoadMonitoringValues neoLoadMonitoringValues=new NeoLoadMonitoringValues(finalTestDefinition1,counterDefinition,customMonitorValues);
                                 influxDBMapper.save(neoLoadMonitoringValues);
@@ -252,6 +303,8 @@ public class NeoLoadHttpHandler {
             if(errorStrings.size()>0)
             {
                 future_results.fail(errorStrings.stream().collect(Collectors.joining(",")));
+                logger.error(errorStrings.stream().collect(Collectors.joining(",")));
+                influxDB.close();
             }
             else
             {
@@ -265,6 +318,8 @@ public class NeoLoadHttpHandler {
             logger.error("Error during syncTestdata",e);
             influxDB.close();
             future_results.fail(e);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         return future_results;
     }

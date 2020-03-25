@@ -14,93 +14,95 @@ import java.util.concurrent.TimeUnit;
 public class NeoLoadElementsValues extends  NeoLoadElementData {
 
     @Column(name ="count")
-    private Long count = null;
+    private Long count ;
 
     @Column(name ="elementPerSecond")
-    private Float elementPerSecond = null;
+    private Double elementPerSecond ;
 
     @Column(name ="minDuration")
-    private Long minDuration = null;
+    private Long minDuration ;
 
     @Column(name ="maxDuration")
-    private Long maxDuration = null;
+    private Long maxDuration ;
 
     @Column(name ="sumDuration")
-    private Long sumDuration = null;
+    private Long sumDuration ;
 
     @Column(name ="avgDuration")
-    private Float avgDuration = null;
+    private Double avgDuration ;
 
     @Column(name ="minTTFB")
-    private Long minTTFB = null;
+    private Long minTTFB ;
 
     @Column(name ="maxTTFB")
-    private Long maxTTFB = null;
+    private Long maxTTFB ;
 
     @Column(name ="sumTTFB")
-    private Long sumTTFB = null;
+    private Long sumTTFB ;
 
     @Column(name ="avgTTFB")
-    private Float avgTTFB = null;
+    private Double avgTTFB ;
 
     @Column(name ="sumDownloadedBytes")
-    private Long sumDownloadedBytes = null;
+    private Long sumDownloadedBytes ;
 
     @Column(name ="downloadedBytesPerSecond")
-    private Float downloadedBytesPerSecond = null;
+    private Double downloadedBytesPerSecond ;
 
     @Column(name ="successCount")
     private Long successCount = null;
 
     @Column(name ="successPerSecond")
-    private Float successPerSecond = null;
+    private Double successPerSecond ;
 
     @Column(name ="successRate")
-    private Float successRate = null;
+    private Double successRate ;
 
     @Column(name ="failureCount")
-    private Long failureCount = null;
+    private Long failureCount ;
 
     @Column(name ="failurePerSecond")
-    private Float failurePerSecond = null;
+    private  Double failurePerSecond ;
 
     @Column(name ="failureRate")
-    private Float failureRate = null;
+    private Double failureRate ;
 
     @Column(name ="percentile50")
-    private Float percentile50=null;
+    private Double percentile50;
     @Column(name ="percentile90")
-    private Float  percentile90=null;
+    private Double  percentile90;
 
     @Column(name ="percentile95")
-    private Float percentile95=null;
+    private Double percentile95;
 
     @Column(name ="percentile99")
-    private Float percentile99=null;
+    private Double percentile99;
 
     public NeoLoadElementsValues(TestDefinition testDefinition, ElementDefinition elementDefinition, ElementValues values)
     {
         this.initialize(testDefinition);
         this.initElement(elementDefinition);
         this.count=values.getCount();
-        this.avgDuration=values.getAvgDuration();
-        this.avgTTFB=values.getAvgTTFB();
-        this.downloadedBytesPerSecond=values.getDownloadedBytesPerSecond();
-        this.elementPerSecond=values.getElementPerSecond();
+        this.avgDuration= setValue(values.getAvgDuration());
+        this.avgTTFB= setValue(values.getAvgTTFB());
+        this.downloadedBytesPerSecond= setValue(values.getDownloadedBytesPerSecond());
+        this.elementPerSecond=setValue(values.getElementPerSecond());
         this.failureCount=values.getFailureCount();
-        this.failurePerSecond=values.getFailurePerSecond();
-        this.failureRate=values.getFailureRate();
+        this.failurePerSecond= setValue(values.getFailurePerSecond());
+        this.failureRate= setValue(values.getFailureRate());
         this.maxDuration=values.getMaxDuration();
         this.maxTTFB=values.getMaxTTFB();
         this.minDuration=values.getMinDuration();
         this.minTTFB=values.getMinTTFB();
-        this.percentile50=values.getPercentile50();
-        this.percentile90=values.getPercentile90();
-        this.percentile95=values.getPercentile95();
-        this.percentile99=values.getPercentile99();
+        if(elementDefinition.getType().equalsIgnoreCase("TRANSACTION")) {
+            this.percentile50 = setValue(values.getPercentile50());
+            this.percentile90 = setValue(values.getPercentile90());
+            this.percentile95 = setValue(values.getPercentile95());
+            this.percentile99 = setValue(values.getPercentile99());
+        }
         this.successCount=values.getSuccessCount();
-        this.successPerSecond=values.getSuccessPerSecond();
-        this.successRate=values.getSuccessRate();
+        this.successPerSecond= setValue(values.getSuccessPerSecond());
+        this.successRate= setValue(values.getSuccessRate());
         this.sumDownloadedBytes=values.getSumDownloadedBytes();
         this.sumDuration=values.getSumDuration();
         this.sumTTFB=this.getSumTTFB();
@@ -115,11 +117,11 @@ public class NeoLoadElementsValues extends  NeoLoadElementData {
         this.count = count;
     }
 
-    public Float getElementPerSecond() {
+    public Double getElementPerSecond() {
         return elementPerSecond;
     }
 
-    public void setElementPerSecond(Float elementPerSecond) {
+    public void setElementPerSecond(Double elementPerSecond) {
         this.elementPerSecond = elementPerSecond;
     }
 
@@ -147,11 +149,11 @@ public class NeoLoadElementsValues extends  NeoLoadElementData {
         this.sumDuration = sumDuration;
     }
 
-    public Float getAvgDuration() {
+    public Double getAvgDuration() {
         return avgDuration;
     }
 
-    public void setAvgDuration(Float avgDuration) {
+    public void setAvgDuration(Double avgDuration) {
         this.avgDuration = avgDuration;
     }
 
@@ -179,11 +181,11 @@ public class NeoLoadElementsValues extends  NeoLoadElementData {
         this.sumTTFB = sumTTFB;
     }
 
-    public Float getAvgTTFB() {
+    public Double getAvgTTFB() {
         return avgTTFB;
     }
 
-    public void setAvgTTFB(Float avgTTFB) {
+    public void setAvgTTFB(Double avgTTFB) {
         this.avgTTFB = avgTTFB;
     }
 
@@ -195,11 +197,11 @@ public class NeoLoadElementsValues extends  NeoLoadElementData {
         this.sumDownloadedBytes = sumDownloadedBytes;
     }
 
-    public Float getDownloadedBytesPerSecond() {
+    public Double getDownloadedBytesPerSecond() {
         return downloadedBytesPerSecond;
     }
 
-    public void setDownloadedBytesPerSecond(Float downloadedBytesPerSecond) {
+    public void setDownloadedBytesPerSecond(Double downloadedBytesPerSecond) {
         this.downloadedBytesPerSecond = downloadedBytesPerSecond;
     }
 
@@ -211,19 +213,19 @@ public class NeoLoadElementsValues extends  NeoLoadElementData {
         this.successCount = successCount;
     }
 
-    public Float getSuccessPerSecond() {
+    public Double getSuccessPerSecond() {
         return successPerSecond;
     }
 
-    public void setSuccessPerSecond(Float successPerSecond) {
+    public void setSuccessPerSecond(Double successPerSecond) {
         this.successPerSecond = successPerSecond;
     }
 
-    public Float getSuccessRate() {
+    public Double getSuccessRate() {
         return successRate;
     }
 
-    public void setSuccessRate(Float successRate) {
+    public void setSuccessRate(Double successRate) {
         this.successRate = successRate;
     }
 
@@ -235,51 +237,51 @@ public class NeoLoadElementsValues extends  NeoLoadElementData {
         this.failureCount = failureCount;
     }
 
-    public Float getFailurePerSecond() {
+    public Double getFailurePerSecond() {
         return failurePerSecond;
     }
 
-    public void setFailurePerSecond(Float failurePerSecond) {
+    public void setFailurePerSecond(Double failurePerSecond) {
         this.failurePerSecond = failurePerSecond;
     }
 
-    public Float getFailureRate() {
+    public Double getFailureRate() {
         return failureRate;
     }
 
-    public void setFailureRate(Float failureRate) {
+    public void setFailureRate(Double failureRate) {
         this.failureRate = failureRate;
     }
 
-    public Float getPercentile50() {
+    public Double getPercentile50() {
         return percentile50;
     }
 
-    public void setPercentile50(Float percentile50) {
+    public void setPercentile50(Double percentile50) {
         this.percentile50 = percentile50;
     }
 
-    public Float getPercentile90() {
+    public Double getPercentile90() {
         return percentile90;
     }
 
-    public void setPercentile90(Float percentile90) {
+    public void setPercentile90(Double percentile90) {
         this.percentile90 = percentile90;
     }
 
-    public Float getPercentile95() {
+    public Double getPercentile95() {
         return percentile95;
     }
 
-    public void setPercentile95(Float percentile95) {
+    public void setPercentile95(Double percentile95) {
         this.percentile95 = percentile95;
     }
 
-    public Float getPercentile99() {
+    public Double getPercentile99() {
         return percentile99;
     }
 
-    public void setPercentile99(Float percentile99) {
+    public void setPercentile99(Double percentile99) {
         this.percentile99 = percentile99;
     }
 }

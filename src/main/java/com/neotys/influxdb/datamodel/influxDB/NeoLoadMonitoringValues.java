@@ -13,29 +13,29 @@ import java.util.concurrent.TimeUnit;
 @Measurement(name = "neoload_MonitoringValues",timeUnit = TimeUnit.MILLISECONDS)
 public class NeoLoadMonitoringValues extends NeoLoadMonitoringData {
     @Column(name ="count")
-    private Long count = null;
+    private Long count ;
 
     @Column(name ="min")
-    private Float min = null;
+    private Double min;
 
     @Column(name ="max")
-    private Float max = null;
+    private Double max ;
 
     @Column(name ="sum")
-    private Float sum = null;
+    private Double sum;
 
     @Column(name ="avg")
-    private Float avg = null;
+    private Double avg ;
 
     public NeoLoadMonitoringValues(TestDefinition testDefinition, CounterDefinition counterDefinition, CounterValues values)
     {
         this.initialize(testDefinition);
         this.init_monitoringdata(counterDefinition);
         this.count=values.getCount();
-        this.avg=values.getAvg();
-        this.max=values.getMax();
-        this.min=values.getMin();
-        this.sum=values.getSum();
+        this.avg= setValue(values.getAvg());
+        this.max= setValue(values.getMax());
+        this.min= setValue(values.getMin());
+        this.sum= setValue(values.getSum());
         this.time= Instant.ofEpochMilli(testDefinition.getEndDate());
     }
 
@@ -47,35 +47,35 @@ public class NeoLoadMonitoringValues extends NeoLoadMonitoringData {
         this.count = count;
     }
 
-    public Float getMin() {
+    public Double getMin() {
         return min;
     }
 
-    public void setMin(Float min) {
+    public void setMin(Double min) {
         this.min = min;
     }
 
-    public Float getMax() {
+    public Double getMax() {
         return max;
     }
 
-    public void setMax(Float max) {
+    public void setMax(Double max) {
         this.max = max;
     }
 
-    public Float getSum() {
+    public Double getSum() {
         return sum;
     }
 
-    public void setSum(Float sum) {
+    public void setSum(Double sum) {
         this.sum = sum;
     }
 
-    public Float getAvg() {
+    public Double getAvg() {
         return avg;
     }
 
-    public void setAvg(Float avg) {
+    public void setAvg(Double avg) {
         this.avg = avg;
     }
 }

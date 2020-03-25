@@ -12,46 +12,46 @@ import java.util.concurrent.TimeUnit;
 @Measurement(name = "neoload_ElementPoints",timeUnit = TimeUnit.MILLISECONDS)
 public class NeoLoadElementsPoints extends NeoLoadElementData {
     @Column(name ="from")
-    private Long from = null;
+    private Long from ;
 
     @Column(name ="to")
-    private Long to = null;
+    private Long to ;
 
     @Column(name ="AVG_DURATION")
-    private Float AVG_DURATION = null;
+    private Double AVG_DURATION ;
 
     @Column(name ="MIN_DURATION")
-    private Float MIN_DURATION = null;
+    private Double MIN_DURATION ;
 
     @Column(name ="MAX_DURATION")
-    private Float MAX_DURATION = null;
+    private Double MAX_DURATION ;
 
     @Column(name ="COUNT")
-    private Float COUNT = null;
+    private Double COUNT ;
 
     @Column(name ="THROUGHPUT")
-    private Float THROUGHPUT = null;
+    private Double THROUGHPUT ;
 
     @Column(name ="ELEMENTS_PER_SECOND")
-    private Float ELEMENTS_PER_SECOND = null;
+    private Double ELEMENTS_PER_SECOND ;
 
     @Column(name ="ERRORS")
-    private Float ERRORS = null;
+    private Double ERRORS ;
 
     @Column(name ="ERRORS_PER_SECOND")
-    private Float ERRORS_PER_SECOND = null;
+    private Double ERRORS_PER_SECOND ;
 
     @Column(name ="ERROR_RATE")
-    private Float ERROR_RATE = null;
+    private Double ERROR_RATE ;
 
     @Column(name ="AVG_TTFB")
-    private Float AVG_TTFB = null;
+    private Double AVG_TTFB ;
 
     @Column(name ="MIN_TTFB")
-    private Float MIN_TTFB = null;
+    private Double MIN_TTFB ;
 
     @Column(name ="MAX_TTFB")
-    private Float MAX_TTFB = null;
+    private Double MAX_TTFB ;
 
 
 
@@ -62,21 +62,22 @@ public class NeoLoadElementsPoints extends NeoLoadElementData {
        this.initElement(elementDefinition);
        this.to=point.getTo();
        this.from=point.getFrom();
-       this.AVG_DURATION=point.getAVGDURATION();
-       this.AVG_TTFB=point.getAVGTTFB();
-       this.COUNT=point.getCOUNT();
-       this.ELEMENTS_PER_SECOND=point.getELEMENTSPERSECOND();
-       this.ERROR_RATE=point.getERRORRATE();
-       this.ERRORS=point.getERRORS();
-       this.ERRORS_PER_SECOND=point.getERRORSPERSECOND();
-       this.MAX_DURATION=point.getMAXDURATION();
-       this.MIN_DURATION=point.getMINDURATION();
-       this.MAX_TTFB=point.getMAXTTFB();
-       this.MIN_TTFB=point.getMINTTFB();
-
+       this.AVG_DURATION= setValue(point.getAVGDURATION());
+       this.AVG_TTFB= setValue(point.getAVGTTFB());
+       this.COUNT= setValue(point.getCOUNT());
+       this.ELEMENTS_PER_SECOND= setValue(point.getELEMENTSPERSECOND());
+       this.ERROR_RATE= setValue(point.getERRORRATE());
+       this.ERRORS= setValue(point.getERRORS());
+       this.ERRORS_PER_SECOND= setValue(point.getERRORSPERSECOND());
+       this.MAX_DURATION= setValue(point.getMAXDURATION());
+       this.MIN_DURATION= setValue(point.getMINDURATION());
+       this.MAX_TTFB= setValue(point.getMAXTTFB());
+       this.MIN_TTFB= setValue(point.getMINTTFB());
+       this.THROUGHPUT=setValue(point.getTHROUGHPUT());
        this.time= Instant.ofEpochMilli(testDefinition.getStartDate()+this.to);
 
     }
+
 
     public Long getFrom() {
         return from;
@@ -94,99 +95,99 @@ public class NeoLoadElementsPoints extends NeoLoadElementData {
         this.to = to;
     }
 
-    public Float getAVG_DURATION() {
+    public Double getAVG_DURATION() {
         return AVG_DURATION;
     }
 
-    public void setAVG_DURATION(Float AVG_DURATION) {
+    public void setAVG_DURATION(Double AVG_DURATION) {
         this.AVG_DURATION = AVG_DURATION;
     }
 
-    public Float getMIN_DURATION() {
+    public Double getMIN_DURATION() {
         return MIN_DURATION;
     }
 
-    public void setMIN_DURATION(Float MIN_DURATION) {
+    public void setMIN_DURATION(Double MIN_DURATION) {
         this.MIN_DURATION = MIN_DURATION;
     }
 
-    public Float getMAX_DURATION() {
+    public Double getMAX_DURATION() {
         return MAX_DURATION;
     }
 
-    public void setMAX_DURATION(Float MAX_DURATION) {
+    public void setMAX_DURATION(Double MAX_DURATION) {
         this.MAX_DURATION = MAX_DURATION;
     }
 
-    public Float getCOUNT() {
+    public Double getCOUNT() {
         return COUNT;
     }
 
-    public void setCOUNT(Float COUNT) {
+    public void setCOUNT(Double COUNT) {
         this.COUNT = COUNT;
     }
 
-    public Float getTHROUGHPUT() {
+    public Double getTHROUGHPUT() {
         return THROUGHPUT;
     }
 
-    public void setTHROUGHPUT(Float THROUGHPUT) {
+    public void setTHROUGHPUT(Double THROUGHPUT) {
         this.THROUGHPUT = THROUGHPUT;
     }
 
-    public Float getELEMENTS_PER_SECOND() {
+    public Double getELEMENTS_PER_SECOND() {
         return ELEMENTS_PER_SECOND;
     }
 
-    public void setELEMENTS_PER_SECOND(Float ELEMENTS_PER_SECOND) {
+    public void setELEMENTS_PER_SECOND(Double ELEMENTS_PER_SECOND) {
         this.ELEMENTS_PER_SECOND = ELEMENTS_PER_SECOND;
     }
 
-    public Float getERRORS() {
+    public Double getERRORS() {
         return ERRORS;
     }
 
-    public void setERRORS(Float ERRORS) {
+    public void setERRORS(Double ERRORS) {
         this.ERRORS = ERRORS;
     }
 
-    public Float getERRORS_PER_SECOND() {
+    public Double getERRORS_PER_SECOND() {
         return ERRORS_PER_SECOND;
     }
 
-    public void setERRORS_PER_SECOND(Float ERRORS_PER_SECOND) {
+    public void setERRORS_PER_SECOND(Double ERRORS_PER_SECOND) {
         this.ERRORS_PER_SECOND = ERRORS_PER_SECOND;
     }
 
-    public Float getERROR_RATE() {
+    public Double getERROR_RATE() {
         return ERROR_RATE;
     }
 
-    public void setERROR_RATE(Float ERROR_RATE) {
+    public void setERROR_RATE(Double ERROR_RATE) {
         this.ERROR_RATE = ERROR_RATE;
     }
 
-    public Float getAVG_TTFB() {
+    public Double getAVG_TTFB() {
         return AVG_TTFB;
     }
 
-    public void setAVG_TTFB(Float AVG_TTFB) {
+    public void setAVG_TTFB(Double AVG_TTFB) {
         this.AVG_TTFB = AVG_TTFB;
     }
 
-    public Float getMIN_TTFB() {
+    public Double getMIN_TTFB() {
         return MIN_TTFB;
     }
 
-    public void setMIN_TTFB(Float MIN_TTFB) {
+    public void setMIN_TTFB(Double MIN_TTFB) {
         this.MIN_TTFB = MIN_TTFB;
     }
 
-    public Float getMAX_TTFB() {
+    public Double getMAX_TTFB() {
         return MAX_TTFB;
     }
 
-    public void setMAX_TTFB(Float MAX_TTFB) {
+    public void setMAX_TTFB(Double MAX_TTFB) {
         this.MAX_TTFB = MAX_TTFB;
     }
 
