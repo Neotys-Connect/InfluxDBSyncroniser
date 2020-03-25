@@ -1,0 +1,48 @@
+version: '2'
+
+services:
+  NeoLoad-InfluxDBSync:
+    container_name: WebHookHandler
+    image: hrexed/neoload_influxDBsync:latest
+    ports:
+    - "8080:8080"
+    links:
+    - influxdb
+    environment:
+    - NL_WEB_HOST= neoload.saas.neotys.com
+    - NL_API_TOKEN= TOKEN_TOBE_REPLACE
+    - NL_API_HOST=neoload-api.saas.neotys.com
+    - PORT=8080
+    - logging-level=DEBUG
+    - InfluxDBdatabase= DATABASE_TOBE_REPLACE
+    - INfluxDBuser=USER_TOBE_REPLACE
+    - INfluxDBpassword=PWD_TOBE_rePLACE
+    - InfluxDBHost=influxdb
+    - InfluxDBport=8086
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    ports:
+    - "8083:8083"
+    - "8086:8086"
+    - "8090:8090"
+    environment:
+    -  INFLUXDB_DATA_ENGINE=tsm1
+    -  INFLUXDB_DB=DATABASE_TOBE_REPLACE
+    -  INFLUXDB_ADMIN_USER=USER_TOBE_REPLACE
+    -  INFLUXDB_ADMIN_PASSWORD=PWD_TOBE_rePLACE
+    -  INFLUXDB_REPORTING_DISABLED=false
+    volumes:
+    - /srv/docker/influxdb/data:/var/lib/influxdb
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+    - "3000:3000"
+    environment:
+    - GF_INSTALL_PLUGINS=grafana-clock-panel,briangann-gauge-panel,natel-plotly-panel,grafana-simple-json-datasource
+    user: "0"
+    links:
+    - influxdb
+    volumes:
+    - /srv/docker/grafana/data:/var/lib/grafana
