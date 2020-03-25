@@ -3,7 +3,7 @@ version: '2'
 services:
   NeoLoad-InfluxDBSync:
     container_name: WebHookHandler
-    image: hrexed/neoload_influxDBsync:latest
+    image: hrexed/neoload_influxdbsync:latest
     ports:
     - "8080:8080"
     links:
