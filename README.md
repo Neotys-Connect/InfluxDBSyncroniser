@@ -1,4 +1,4 @@
-# NeoLoad INFLUXDB Grafana Syncroniser
+# NeoLoad INFLUXDB Grafana Synchroniser
 
 This project is stream out all data of a neoload test to InfluxDB
 This project has one container :
