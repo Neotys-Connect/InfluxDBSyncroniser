@@ -37,6 +37,27 @@ public class NeoLoadEvents extends NeoLoadCommonData {
         this.time= Instant.ofEpochMilli(definition.getStartDate()+eventDefinition.getOffset());
     }
 
+    public String toString()
+    {
+        StringBuilder result=new StringBuilder();
+        result.append("Monitroing Points :");
+        result.append("code:"+code);
+        result.append(" fullname:"+fullname);
+        result.append(" type:"+type);
+
+        result.append(" author :"+this.author);
+        result.append(" tesname :"+this.testname);
+        result.append(" project :"+this.projectname);
+        result.append(" scenario :"+this.scenario);
+        result.append(" enddate :"+this.endDate);
+        result.append(" startdate :"+this.startDate);
+        result.append(" source :"+source);
+        result.append(" eventTime :"+eventTime);
+        result.append(" name :"+name);
+        result.append(" metricname :"+this.getName());
+        result.append(" time :"+this.time);
+        return result.toString();
+    }
     public String getName() {
         return name;
     }

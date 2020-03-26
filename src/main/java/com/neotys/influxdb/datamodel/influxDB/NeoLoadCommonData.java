@@ -25,7 +25,11 @@ public class NeoLoadCommonData {
     public void initialize(TestDefinition definition)
     {
         this.author=definition.getAuthor();
-        this.endDate=definition.getEndDate();
+        if(definition.getEndDate()!=null)
+            this.endDate=definition.getEndDate();
+        else
+            this.endDate= Long.valueOf(0);
+
         this.testname=definition.getName();
         this.projectname=definition.getProject();
         this.scenario=definition.getScenario();

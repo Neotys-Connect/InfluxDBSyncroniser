@@ -40,7 +40,7 @@ public class Constants {
     public static final String NEOLAOD_WEB_URL="/#!result/";
     public static final String NEOLAOD_WEB_LASTPART_URL="/overview";
 
-    public static final String NEOLOAD_ENDSTATUS="PASSED";
+    public static final String NEOLOAD_ENDSTATUS="TERMINATED";
 
     //-----SLA Status
 
@@ -49,4 +49,8 @@ public class Constants {
    // public static final List<String> ELEMENT_LIST_CATEGORY = new ArrayList<>(  Arrays.asList("TRANSACTION", "PAGE","REQUEST"));
     public static final String ELEMENT_STATISTICS="AVG_DURATION,MIN_DURATION,MAX_DURATION,COUNT,THROUGHPUT,ELEMENTS_PER_SECOND,ERRORS,ERRORS_PER_SECOND,ERROR_RATE,AVG_TTFB,MIN_TTFB,MAX_TTFB" ;
 
+    public final static int NL_API_LIMITE_CODE=429;
+    public final static String RETRY_AFTER="Retry-After";
+
+    public final static String ALL_REQUEST="all-requests";
 }

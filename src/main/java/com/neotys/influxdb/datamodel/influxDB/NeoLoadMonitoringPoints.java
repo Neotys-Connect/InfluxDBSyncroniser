@@ -22,6 +22,25 @@ public class NeoLoadMonitoringPoints extends NeoLoadMonitoringData {
     @Column(name ="AVG")
     private Double AVG;
 
+    public String toString()
+    {
+        StringBuilder result=new StringBuilder();
+        result.append("Monitroing Points :");
+        result.append("from:"+from);
+        result.append(" to:"+to);
+        result.append(" AVG:"+AVG);
+        result.append(" author :"+this.author);
+        result.append(" tesname :"+this.testname);
+        result.append(" project :"+this.projectname);
+        result.append(" scenario :"+this.scenario);
+        result.append(" enddate :"+this.endDate);
+        result.append(" startdate :"+this.startDate);
+        result.append(" path :"+this.getPath());
+        result.append(" metricname :"+this.getName());
+        result.append(" time :"+this.time);
+        return result.toString();
+    }
+
     public NeoLoadMonitoringPoints(TestDefinition definition, CounterDefinition counterDefinition, Point point)
     {
         this.initialize(definition);

@@ -78,7 +78,34 @@ public class NeoLoadElementsPoints extends NeoLoadElementData {
 
     }
 
+    public String toString()
+    {
+        StringBuilder result=new StringBuilder();
+        result.append("Monitroing Points :");
+        result.append("from:"+from);
+        result.append(" to:"+to);
+        result.append(" AVG:"+AVG_DURATION);
+        result.append(" AVG_TTFB:"+AVG_TTFB);
+        result.append(" COUNT:"+COUNT);
+        result.append(" ELEMENTS_PER_SECOND:"+ELEMENTS_PER_SECOND);
 
+        result.append(" ERROR_RATE:"+ERROR_RATE);
+        result.append(" ERRORS_PER_SECOND:"+ERRORS_PER_SECOND);
+        result.append(" MAX_DURATION:"+MAX_DURATION);
+        result.append(" MIN_DURATION:"+MIN_DURATION);
+        result.append(" MAX_TTFB:"+MAX_TTFB);
+        result.append(" THROUGHPUT:"+THROUGHPUT);
+        result.append(" author :"+this.author);
+        result.append(" tesname :"+this.testname);
+        result.append(" project :"+this.projectname);
+        result.append(" scenario :"+this.scenario);
+        result.append(" enddate :"+this.endDate);
+        result.append(" startdate :"+this.startDate);
+        result.append(" path :"+this.getPath());
+        result.append(" metricname :"+this.getName());
+        result.append(" time :"+this.time);
+        return result.toString();
+    }
     public Long getFrom() {
         return from;
     }

@@ -136,114 +136,196 @@ public class NeoLoadHttpHandler {
                                 {
                                     logger.debug("Foudn te element points withe offset "+point.getFrom() +" with ref "+offset_elements.get());
                                     //----store the points----
-                                    if(point.getFrom()>offset_elements.get())
+                                    if(point.getFrom()>=offset_elements.get())
                                     {
                                         logger.debug("Storing the element point "+point.getFrom());
                                         NeoLoadElementsPoints elementsPoints=new NeoLoadElementsPoints(finalTestDefinition2,elementDefinition,point);
-                                        influxDBMapper.save(elementsPoints);
-                                        logger.debug(" point stored "+point.getFrom());
                                         try {
-                                            Thread.sleep(50);
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
+                                            influxDBMapper.save(elementsPoints);
+                                            logger.debug(" point stored " + point.getFrom());
+                                        }
+                                        catch (NullPointerException e)
+                                        {
+                                            logger.debug(" null pointer execption on "+ elementsPoints.toString());
                                         }
                                     }
                                     //-----------------------
                                     offset_elements.set(point.getFrom());
                                 });
+
                             } catch (ApiException e) {
-                                logger.error("Error parsing the element for id "+elementDefinition.getId(), e);
-                                errorStrings.add("Error parsing the element for id "+elementDefinition.getId() +" -" +e.getMessage());
+                                if(e.getCode()==NL_API_LIMITE_CODE)
+                                {
+                                   getRetryFromHeader(e);
+                                }
+                                else {
+                                    logger.error("Error parsing the element for id " + elementDefinition.getId() + " with code " + e.getCode() + "with hearder" + e.getResponseHeaders().toString(), e);
+                                    errorStrings.add("Error parsing the element for id " + elementDefinition.getId() + " -" + e.getMessage());
+                                }
                             }
 
                         });
                     } catch (ApiException e) {
-                        logger.error("Error parseing results", e);
-                        errorStrings.add("Error parseing results "+e.getMessage());
+                        if(e.getCode()==NL_API_LIMITE_CODE)
+                        {
+                            getRetryFromHeader(e);
+                        }
+                        else {
+                            logger.error("Error parseing results" + e.getCode() + " hearders" + e.getResponseHeaders().toString(), e);
+                            errorStrings.add("Error parseing results " + e.getMessage());
+                        }
+                    }
+                });
+                try{
+                       ElementDefinition elementDefinition=resultsApi.getTestElementDefinition(testid,ALL_REQUEST);
+                        resultsApi.getTestElementsPoints(testid, ALL_REQUEST, ELEMENT_STATISTICS).forEach(point ->
+                        {
+                            logger.debug("Foudn te element points withe offset "+point.getFrom() +" with ref "+offset_elements.get());
+                            //----store the points----
+                            if(point.getFrom()>=offset_elements.get())
+                            {
+                                logger.debug("Storing the element point "+point.getFrom());
+                                NeoLoadElementsPoints elementsPoints=new NeoLoadElementsPoints(finalTestDefinition2,elementDefinition,point);
+                                try {
+                                    influxDBMapper.save(elementsPoints);
+                                    logger.debug(" point stored " + point.getFrom());
+                                }
+                                catch (NullPointerException e)
+                                {
+                                    logger.debug(" null pointer execption on "+ elementsPoints.toString());
+                                }
+                            }
+                            //-----------------------
+                            offset_elements.set(point.getFrom());
+                        });
+
+                    } catch (ApiException e) {
+                        if(e.getCode()==NL_API_LIMITE_CODE)
+                        {
+                            getRetryFromHeader(e);
+                        }
+                        else {
+                            logger.error("Error parsing the element", e);
+                            errorStrings.add("Error parsing the element -" + e.getMessage());
+                        }
                     }
 
-                    try{
-                    //----query the coutners$
-                    resultsApi.getTestMonitors(testid).forEach(counterDefinition ->
-                    {
-                        logger.debug("parsing the counter "+counterDefinition.getName());
+                try{
+                //----query the coutners$
+                resultsApi.getTestMonitors(testid).forEach(counterDefinition ->
+                {
+                    logger.debug("parsing the counter "+counterDefinition.getName());
 
-                        try {
-                            resultsApi.getTestMonitorsPoints(testid, counterDefinition.getId()).forEach(point ->
+                    try {
+                        resultsApi.getTestMonitorsPoints(testid, counterDefinition.getId()).forEach(point ->
+                        {
+                            logger.debug("parsing the point with offset"+point.getFrom() +" the current offset reference is "+offset_monitor.get());
+
+                            //------store in the database------
+                            if(point.getFrom()>=offset_monitor.get())
                             {
-                                logger.debug("parsing the point with offset"+point.getFrom() +" the current offset reference is "+offset_monitor.get());
-
-                                //------store in the database------
-                                if(point.getFrom()>offset_monitor.get())
-                                {
-                                    logger.debug("Storing the point with offset"+point.getFrom());
-
-                                    NeoLoadMonitoringPoints monitoringPoints=new NeoLoadMonitoringPoints(finalTestDefinition2,counterDefinition,point);
+                                logger.debug("Storing the point with offset"+point.getFrom());
+                                NeoLoadMonitoringPoints monitoringPoints=new NeoLoadMonitoringPoints(finalTestDefinition2,counterDefinition,point);
+                                try {
                                     influxDBMapper.save(monitoringPoints);
                                     logger.debug(" the point with offset stored"+point.getFrom());
-                                    try {
-                                        Thread.sleep(50);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-
-
                                 }
-                                offset_monitor.set(point.getFrom());
-                                //-------------------------------
-                            });
-                        }
-                        catch (ApiException e)
-                        {
-                            logger.error("unable to qery the points of the counter : " + counterDefinition.getId(),e);
-                            errorStrings.add("unable to qery the points of the counter : " + counterDefinition.getId() + " - "+e.getMessage());
-                        }
-                    });
+                                catch (NullPointerException e)
+                                {
+                                    logger.debug(" null pointer execption on "+ monitoringPoints.toString());
+                                }
+
+                            }
+                            offset_monitor.set(point.getFrom());
+                            //-------------------------------
+                        });
+
                     }
                     catch (ApiException e)
                     {
-                        logger.error("unable to qery counter ",e);
-                        errorStrings.add("unable to qery counter "+e.getMessage());
-
+                        if(e.getCode()==NL_API_LIMITE_CODE)
+                        {
+                            getRetryFromHeader(e);
+                        }
+                        else {
+                            logger.error("unable to qery the points of the counter : " + counterDefinition.getId() + " with code " + e.getCode() + "header " + e.getResponseHeaders().toString(), e);
+                            errorStrings.add("unable to qery the points of the counter : " + counterDefinition.getId() + " - " + e.getMessage());
+                        }
+                    }
+                });
+                }
+                catch (ApiException e)
+                {
+                    if(e.getCode()==NL_API_LIMITE_CODE)
+                    {
+                        getRetryFromHeader(e);
+                    }
+                    else {
+                        logger.error("unable to qery counter  with code " + e.getCode(), e);
+                        errorStrings.add("unable to qery counter " + e.getMessage());
                     }
 
-                });
+                }
+
+
                 HashMap<String,String> elements=new HashMap<>();
                 TestDefinition finalTestDefinition = testDefinition;
-                resultsApi.getTestEvents(testid,null,200, offset_events.get(),"+offset_events").forEach(eventDefinition ->
-                {
-                    logger.debug("parsing the event  "+eventDefinition.getFullname());
-
-                    String elementname=elements.get(eventDefinition.getElementid().toString());
-                    if(elementname==null)
+                try{
+                    resultsApi.getTestEvents(testid,null,200, offset_events.get(),"+offset_events").forEach(eventDefinition ->
                     {
-                        try
+                        logger.debug("parsing the event  "+eventDefinition.getFullname());
+
+                        String elementname=elements.get(eventDefinition.getElementid().toString());
+                        if(elementname==null)
                         {
-                            elementname=resultsApi.getTestElementDefinition(testid,eventDefinition.getElementid().toString()).getName();
-                            elements.put(eventDefinition.getElementid().toString(),elementname);
-                        }
-                        catch (ApiException e)
-                        {
-                            logger.error("Unable to find the element "+eventDefinition.getElementid().toString());
-                            errorStrings.add("unable to find the element  : " + eventDefinition.getId() + " - "+e.getMessage());
+                            try
+                            {
+                                elementname=resultsApi.getTestElementDefinition(testid,eventDefinition.getElementid().toString()).getName();
+                                elements.put(eventDefinition.getElementid().toString(),elementname);
+                            }
+                            catch (ApiException e)
+                            {
+                                if(e.getCode()==NL_API_LIMITE_CODE)
+                                {
+                                    getRetryFromHeader(e);
+                                }
+                                else {
+                                    logger.error("Unable to find the element " + eventDefinition.getElementid().toString());
+                                    errorStrings.add("unable to find the element  : " + eventDefinition.getId() + " - " + e.getMessage());
+
+                                }
+                            }
+                            logger.debug("parsing on the element   "+elementname);
 
                         }
-                        logger.debug("parsing on the element   "+elementname);
+                        //----store the event---------------
+                        logger.debug("Storing the event  "+eventDefinition.getFullname());
+
+                        NeoLoadEvents neoLoadEvents=new NeoLoadEvents(finalTestDefinition,eventDefinition,elementname);
+                        try {
+                            influxDBMapper.save(neoLoadEvents);
+                        }
+                        catch (NullPointerException e)
+                        {
+                            logger.debug(" null pointer execption on "+ neoLoadEvents.toString());
+                        }
+                        increment(offset_events);
+
+                        //----------------------------------
+                    });
+                }
+                catch(ApiException e)
+                {
+                    if(e.getCode()==NL_API_LIMITE_CODE)
+                    {
+                        getRetryFromHeader(e);
+                    }
+                    else {
+                        logger.error("Unable to get the evets " ,e);
+                        errorStrings.add("unable to get the evets  "+e.getMessage());
 
                     }
-                    //----store the event---------------
-                    logger.debug("Storing the event  "+eventDefinition.getFullname());
-
-                    NeoLoadEvents neoLoadEvents=new NeoLoadEvents(finalTestDefinition,eventDefinition,elementname);
-                    influxDBMapper.save(neoLoadEvents);
-                    offset_events.set(Integer.parseInt(eventDefinition.getId()));
-                    try {
-                        Thread.sleep(50);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    //----------------------------------
-                });
+                }
             }
 
             if(test_status.equalsIgnoreCase(NEOLOAD_ENDSTATUS))
@@ -267,38 +349,69 @@ public class NeoLoadHttpHandler {
                                 logger.debug("Storing value of  element "+elementDefinition.getName());
 
                                 NeoLoadElementsValues neoLoadElementsValues=new NeoLoadElementsValues(finalTestDefinition1,elementDefinition,values);
+                                try{
                                 influxDBMapper.save(neoLoadElementsValues);
+                                }
+                                catch (NullPointerException e)
+                                {
+                                    logger.debug(" null pointer execption on "+ neoLoadElementsValues.toString());
+                                }
+
 
                                 //-----------------------------
                             } catch (ApiException e) {
-                                logger.error("Error parsing the element values for id "+elementDefinition.getId(), e);
-                                errorStrings.add("unable to find the element  : " + elementDefinition.getId() + " - "+e.getMessage());
-
-                            }
-                        });
-                        resultsApi.getTestMonitors(testid).forEach(counterDefinition -> {
-                            try {
-                                logger.debug("parsing counter  "+counterDefinition.getName());
-
-                                CounterValues customMonitorValues=resultsApi.getTestMonitorsValues(testid, counterDefinition.getId());
-                                NeoLoadMonitoringValues neoLoadMonitoringValues=new NeoLoadMonitoringValues(finalTestDefinition1,counterDefinition,customMonitorValues);
-                                influxDBMapper.save(neoLoadMonitoringValues);
-                                //----store the monitoring value-------
-                            }
-                            catch (ApiException e)
-                            {
-                                logger.error("unable to find counter " + counterDefinition.getId());
-                                errorStrings.add("unable to find the counter  : " + counterDefinition.getId() + " - "+e.getMessage());
-
+                                if(e.getCode()==NL_API_LIMITE_CODE)
+                                {
+                                    getRetryFromHeader(e);
+                                }
+                                else {
+                                    logger.error("Error parsing the element values for id " + elementDefinition.getId(), e);
+                                    errorStrings.add("unable to find the element  : " + elementDefinition.getId() + " - " + e.getMessage());
+                                }
                             }
                         });
                     } catch (ApiException e) {
-                        logger.error("Errror parseing results", e);
-                        errorStrings.add("unable to parse results   - "+e.getMessage());
+                        if(e.getCode()==NL_API_LIMITE_CODE)
+                        {
+                            getRetryFromHeader(e);
+                        }
+                        else {
+                            logger.error("Errror parseing results", e);
+                            errorStrings.add("unable to parse results   - " + e.getMessage());
+                        }
 
                     }
-
                 });
+                resultsApi.getTestMonitors(testid).forEach(counterDefinition -> {
+                    try {
+                        logger.debug("parsing counter  "+counterDefinition.getName());
+
+                        CounterValues customMonitorValues=resultsApi.getTestMonitorsValues(testid, counterDefinition.getId());
+                        NeoLoadMonitoringValues neoLoadMonitoringValues=new NeoLoadMonitoringValues(finalTestDefinition1,counterDefinition,customMonitorValues);
+                        try {
+                            influxDBMapper.save(neoLoadMonitoringValues);
+                        }
+                        catch (NullPointerException e)
+                        {
+                            logger.debug(" null pointer execption on "+ neoLoadMonitoringValues.toString());
+                        }
+                        //----store the monitoring value-------
+                    }
+                    catch (ApiException e)
+                    {
+                        if(e.getCode()==NL_API_LIMITE_CODE)
+                        {
+                            getRetryFromHeader(e);
+                        }
+                        else {
+                            logger.error("unable to find counter " + counterDefinition.getId());
+                            errorStrings.add("unable to find the counter  : " + counterDefinition.getId() + " - " + e.getMessage());
+                        }
+                    }
+                });
+
+
+
             }
             if(errorStrings.size()>0)
             {
@@ -320,10 +433,35 @@ public class NeoLoadHttpHandler {
             future_results.fail(e);
         } catch (InterruptedException e) {
             e.printStackTrace();
+            influxDB.close();
+            future_results.fail(e);
         }
         return future_results;
     }
 
+    private void getRetryFromHeader(ApiException e)
+    {
+        if(e.getResponseHeaders().containsKey(RETRY_AFTER))
+        {
+            List<String> retry=e.getResponseHeaders().get(RETRY_AFTER);
+            int wait=Integer.parseInt(retry.get(0));
+            logger.info("Requires to wait "+wait +" ms");
+            try {
+                Thread.sleep(wait);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+    private void increment(AtomicReference<Integer> counter) {
+        while(true) {
+            int existingValue = counter.get();
+            int newValue = existingValue + 1;
+            if(counter.compareAndSet(existingValue, newValue)) {
+                return;
+            }
+        }
+    }
     private void generateApiUrl()
     {
         if(neoload_API_Url.isPresent())

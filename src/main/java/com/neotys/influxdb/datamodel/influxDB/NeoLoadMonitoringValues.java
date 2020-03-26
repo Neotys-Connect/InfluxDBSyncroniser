@@ -39,6 +39,28 @@ public class NeoLoadMonitoringValues extends NeoLoadMonitoringData {
         this.time= Instant.ofEpochMilli(testDefinition.getEndDate());
     }
 
+    public String toString()
+    {
+        StringBuilder result=new StringBuilder();
+        result.append("Monitroing Points :");
+        result.append("count:"+count);
+        result.append(" avg:"+avg);
+        result.append(" max:"+max);
+        result.append(" min:"+min);
+        result.append(" sum:"+sum);
+
+        result.append(" author :"+this.author);
+        result.append(" tesname :"+this.testname);
+        result.append(" project :"+this.projectname);
+        result.append(" scenario :"+this.scenario);
+        result.append(" enddate :"+this.endDate);
+        result.append(" startdate :"+this.startDate);
+        result.append(" path :"+this.getPath());
+        result.append(" metricname :"+this.getName());
+        result.append(" time :"+this.time);
+        return result.toString();
+    }
+
     public Long getCount() {
         return count;
     }

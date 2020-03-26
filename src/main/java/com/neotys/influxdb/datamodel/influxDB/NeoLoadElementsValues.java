@@ -100,15 +100,64 @@ public class NeoLoadElementsValues extends  NeoLoadElementData {
             this.percentile95 = setValue(values.getPercentile95());
             this.percentile99 = setValue(values.getPercentile99());
         }
+        else {
+            this.percentile50 = setValue(Float.valueOf(0));
+            this.percentile90 = setValue(Float.valueOf(0));
+            this.percentile95 = setValue(Float.valueOf(0));
+            this.percentile99 = setValue(Float.valueOf(0));
+        }
         this.successCount=values.getSuccessCount();
         this.successPerSecond= setValue(values.getSuccessPerSecond());
         this.successRate= setValue(values.getSuccessRate());
         this.sumDownloadedBytes=values.getSumDownloadedBytes();
         this.sumDuration=values.getSumDuration();
-        this.sumTTFB=this.getSumTTFB();
+
+        if(this.getSumTTFB()!=null)
+            this.sumTTFB=this.getSumTTFB();
+        else
+            this.sumTTFB= Long.valueOf(0);
         this.time= Instant.ofEpochMilli(testDefinition.getEndDate());
     }
 
+    public String toString()
+    {
+        StringBuilder result=new StringBuilder();
+        result.append("Monitroing Points :");
+        result.append("count:"+count);
+        result.append(" avgDuration:"+avgDuration);
+        result.append(" avgTTFB:"+avgTTFB);
+        result.append(" downloadedBytesPerSecond:"+downloadedBytesPerSecond);
+        result.append(" elementPerSecond:"+elementPerSecond);
+        result.append(" failureCount:"+failureCount);
+        if(getType().equalsIgnoreCase("TRANSACTION")) {
+            result.append(" percentile50:"+percentile50);
+            result.append(" percentile90:"+percentile90);
+            result.append(" percentile95:"+percentile95);
+            result.append(" percentile99:"+percentile99);
+        }
+
+        result.append(" failurePerSecond:"+failurePerSecond);
+        result.append(" failureRate:"+failureRate);
+        result.append(" maxDuration:"+maxDuration);
+        result.append(" maxTTFB:"+maxTTFB);
+        result.append(" minDuration:"+minDuration);
+        result.append(" successRate:"+successRate);
+        result.append(" successCount:"+successCount);
+        result.append(" successPerSecond:"+successPerSecond);
+        result.append(" sumDownloadedBytes:"+sumDownloadedBytes);
+        result.append(" sumDuration:"+sumDuration);
+        result.append(" sumTTFB:"+sumTTFB);
+        result.append(" author :"+this.author);
+        result.append(" tesname :"+this.testname);
+        result.append(" project :"+this.projectname);
+        result.append(" scenario :"+this.scenario);
+        result.append(" enddate :"+this.endDate);
+        result.append(" startdate :"+this.startDate);
+        result.append(" path :"+this.getPath());
+        result.append(" metricname :"+this.getName());
+        result.append(" time :"+this.time);
+        return result.toString();
+    }
     public Long getCount() {
         return count;
     }
