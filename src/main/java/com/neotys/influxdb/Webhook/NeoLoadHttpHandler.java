@@ -11,6 +11,7 @@ import com.neotys.influxdb.datamodel.influxDB.*;
 import io.vertx.core.Future;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
+import org.influxdb.dto.Query;
 import org.influxdb.impl.InfluxDBMapper;
 import org.omg.PortableServer.THREAD_POLICY_ID;
 
@@ -79,6 +80,13 @@ public class NeoLoadHttpHandler {
             logger.debug("Database "+influxDatabase.get()+" does not exists");
             this.influxDB.createDatabase(influxDatabase.get());
             this.influxDB.setDatabase(influxDatabase.get());
+            String retentionPolicyName = "neoload";
+            this.influxDB.query(new Query("CREATE RETENTION POLICY " + retentionPolicyName
+                    + " ON " + influxDatabase.get() + " DURATION 20d REPLICATION 1 DEFAULT"));
+            influxDB.setRetentionPolicy(retentionPolicyName);
+
+            this.influxDB.createRetentionPolicy(
+                    "defaultPolicy", "baeldung", "30d", 1, true);
             logger.debug("Database "+influxDatabase.get()+" created");
 
         }
