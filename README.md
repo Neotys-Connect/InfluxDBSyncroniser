@@ -61,7 +61,7 @@ To configure the webhook in NeoLoad WEB you will need to :
 7. Payload :
 ```json
 {
-            "testid": "$(test_id)"
+            "testid": "$(test_result_id)"
 }
 ```
 <p align="center"><img src="/screenshots/webhook.png" alt="InfluxDB webhok" /></p>
