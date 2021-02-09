@@ -7,7 +7,7 @@ This project has one container :
 ## WebHook Handler : neoload_influxdbsync
 
 ###Configuration
-The webhook handler is a web service package in a container : `hrexed/neoload_influxdbsync`
+The webhook handler is a web service package in a container : `neotyspartnersolution/neoload_influxdbsync`
 The container will required different to define ther right environement variables
 
 ####  Docker environement variables 
